@@ -1,0 +1,47 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules
+
+# Build
+dist
+dist-ssr
+.vite
+
+/application.properties
+src/main/resources/application.properties
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Cache / temp
+.cache
+.temp
+tmp
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage
+
+# Misc
+*.local
