@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
+import { toast } from 'sonner';
 
 import {
   type ParticipanteFormData,
@@ -27,7 +28,7 @@ function validateDatosContacto(d: ParticipanteFormData): ValidationErrors {
   if (!d.pais) errors.pais = 'Selecciona un país.';
   // sede solo obligatoria para Perú
   if (d.pais === 'PE' && !d.sede) errors.sede = 'Selecciona una sede.';
-  if(!d.telefono || !isValidPhoneNumber(d.telefono)){
+  if (!d.telefono || !isValidPhoneNumber(d.telefono)) {
     errors.telefono = 'Ingresa un número de teléfono válido.';
   }
   if (!d.genero) errors.genero = 'Selecciona tu género.';
@@ -44,9 +45,10 @@ function validateParticipacion(d: ParticipanteFormData): ValidationErrors {
   return errors;
 }
 
-function validateTransporte(d: ParticipanteFormData): ValidationErrors {
+function validateTransporte(d: ParticipanteFormData, isAdmin?: boolean): ValidationErrors {
   const errors: ValidationErrors = {};
   if (!d.tipoTransporte) {
+    if (isAdmin) return errors;
     errors.tipoTransporte = 'Selecciona un tipo de transporte o salta este paso.';
     return errors;
   }
@@ -77,7 +79,7 @@ function validateTransporte(d: ParticipanteFormData): ValidationErrors {
 
 // ── Paso index → validador ──
 
-type Validator = (d: ParticipanteFormData) => ValidationErrors;
+type Validator = (d: ParticipanteFormData, isAdmin?: boolean) => ValidationErrors;
 
 const VALIDATORS_WITH_TRANSPORT: Validator[] = [
   validateDatosContacto,
@@ -109,7 +111,7 @@ const LABELS_NO_TRANSPORT = [
 
 // ── Hook ──
 
-export function useWizardForm() {
+export function useWizardForm(isAdmin: boolean = false) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ParticipanteFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,20 +143,20 @@ export function useWizardForm() {
   );
 
   const validateCurrentStep = useCallback((): boolean => {
-    const errs = validators[currentStep](formData);
+    const errs = validators[currentStep](formData, isAdmin);
     setValidationErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [currentStep, formData, validators]);
+  }, [currentStep, formData, validators, isAdmin]);
 
   const validateAll = useCallback((): boolean => {
     let allErrors: ValidationErrors = {};
     for (const valFn of validators) {
-      const errs = valFn(formData);
+      const errs = valFn(formData, isAdmin);
       allErrors = { ...allErrors, ...errs };
     }
     setValidationErrors(allErrors);
     return Object.keys(allErrors).length === 0;
-  }, [formData, validators]);
+  }, [formData, validators, isAdmin]);
 
   const next = useCallback(() => {
     if (!validateCurrentStep()) return;
@@ -205,14 +207,17 @@ export function useWizardForm() {
     setIsSubmitting(true);
     setError(null);
     try {
-      await participanteService.create(formData);
+      await participanteService.create(formData, isAdmin);
       setIsSuccess(true);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Error al registrar participante.');
-      } else {
-        setError('Error al registrar participante.');
-      }
+      toast.success('¡Inscripción registrada con éxito! Revisa tu correo electrónico.');
+    } catch (err: any) {
+      const msg: string =
+        err.friendlyMessage ||
+        err.response?.data?.message ||
+        err.message ||
+        'Error al registrar participante. Intenta nuevamente.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

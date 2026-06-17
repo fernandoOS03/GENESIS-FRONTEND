@@ -30,7 +30,16 @@ export function DatePicker({
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
 
-  const selected = value ? new Date(value + 'T00:00:00') : undefined;
+  const selected = (() => {
+    if (!value) return undefined;
+    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) return undefined;
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1; // 0-indexed
+    const day = parseInt(match[3], 10);
+    const d = new Date(year, month, day);
+    return isNaN(d.getTime()) ? undefined : d;
+  })();
 
   const displayLabel = selected
     ? format(selected, "d 'de' MMMM yyyy", { locale: es })

@@ -1,125 +1,70 @@
-import WizardForm from '../components/WizardForm';
-import {
-  PiUserLight,
-  PiTargetLight,
-  PiBusLight,
-  PiCheckCircleLight,
-  PiLockSimpleLight,
-} from 'react-icons/pi';
-
-const sidebarItems = [
-  { Icon: PiUserLight, text: 'Datos personales y de contacto' },
-  { Icon: PiTargetLight, text: 'Condición y rol de participación' },
-  { Icon: PiBusLight, text: 'Información de transporte (opcional)' },
-  { Icon: PiCheckCircleLight, text: 'Resumen y confirmación final' },
-];
+import { useState } from 'react';
+import FormularioConversacional from '../components/FormularioConversacional';
+import PantallaBienvenida from '../components/PantallaBienvenida';
 
 export default function FormularioPage() {
+  const [mostrarBienvenida, setMostrarBienvenida] = useState(true);
+
   return (
-    <div className="flex flex-col lg:flex-row min-h-[100dvh] lg:h-screen lg:overflow-hidden bg-background">
+    <div className="formulario-conversacional relative flex min-h-[100dvh] h-[100dvh] overflow-hidden bg-background">
+      
+      {/* Patrones Andinos Laterales Decorativos (Evitan sensación de vacío en pantallas grandes) */}
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 w-16 xl:w-24 opacity-[0.035] pointer-events-none hidden lg:block select-none text-[#BE0A2F]">
+        <svg viewBox="0 0 100 400" className="w-full" fill="currentColor">
+          <path d="M10,0 L90,0 L90,20 L50,20 L50,40 L90,40 L90,60 L10,60 L10,40 L30,40 L30,20 L10,20 Z" />
+          <path d="M50,80 L80,110 L50,140 L20,110 Z M50,95 L65,110 L50,125 L35,110 Z" />
+          <path d="M10,160 L90,160 L90,180 L70,180 L70,200 L90,200 L90,220 L10,220 Z" />
+          <circle cx="50" cy="190" r="10" />
+          <path d="M50,240 L70,240 L70,250 L80,250 L80,260 L70,260 L70,270 L50,270 L50,260 L40,260 L40,250 L50,250 Z" />
+          <path d="M10,290 L90,290 L90,310 L50,310 L50,330 L90,330 L90,350 L10,350 Z" />
+          <circle cx="50" cy="380" r="15" />
+        </svg>
+      </div>
 
-      {/* ── Panel izquierdo sticky ── */}
-      <aside className="hidden lg:flex lg:w-[42%] shrink-0 flex-col overflow-hidden bg-primary relative text-primary-foreground">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 w-16 xl:w-24 opacity-[0.035] pointer-events-none hidden lg:block select-none text-[#E8A000]">
+        <svg viewBox="0 0 100 400" className="w-full" fill="currentColor">
+          <circle cx="50" cy="30" r="15" />
+          <path d="M10,60 L90,60 L90,80 L50,80 L50,100 L90,100 L90,120 L10,120 Z" />
+          <path d="M50,140 L70,140 L70,150 L80,150 L80,160 L70,160 L70,170 L50,170 L50,160 L40,160 L40,150 L50,150 Z" />
+          <path d="M10,190 L90,190 L90,210 L70,210 L70,230 L90,230 L90,250 L10,250 Z" />
+          <circle cx="50" cy="220" r="10" />
+          <path d="M50,270 L80,300 L50,330 L20,300 Z M50,285 L65,300 L50,315 L35,300 Z" />
+          <path d="M10,350 L90,350 L90,370 L50,370 L50,390 L90,390 L90,410 L10,410 Z" />
+        </svg>
+      </div>
+
+      {/* Pantalla de Bienvenida Cinematográfica */}
+      {mostrarBienvenida && (
+        <PantallaBienvenida onContinuar={() => setMostrarBienvenida(false)} />
+      )}
+
+      {/* ── Panel Principal del Formulario ── */}
+      <main className="flex-1 flex flex-col bg-background px-4 sm:px-12 md:px-20 lg:px-32 overflow-hidden py-1 sm:py-3">
         
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff'%3E%3Crect x='0' y='0' width='1' height='40'/%3E%3Crect x='0' y='0' width='40' height='1'/%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
-        <div className="relative flex flex-col justify-between h-full p-8 text-primary-foreground">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20">
-              <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <span className="font-bold tracking-tight">Génesis</span>
-          </div>
-
-          {/* Contenido central */}
-          <div className="space-y-6">
-            <div className="relative select-none -ml-2 leading-none">
-              <div className="text-[80px] xl:text-[96px] font-black text-white/[0.07]">IYF</div>
-              <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-white/20 -mt-1 ml-1">WC 2027 &middot; Perú</div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="h-px flex-1 bg-white/20" />
-                <span className="text-[10px] font-medium uppercase tracking-widest text-white/50">Inscripción</span>
-                <div className="h-px flex-1 bg-white/20" />
-              </div>
-              <div>
-                <h1 className="text-3xl xl:text-4xl font-black leading-tight tracking-tight">
-                  Formulario de<br /><span className="text-white/60">Registro</span>
-                </h1>
-                <p className="mt-2 text-white/60 text-sm leading-relaxed">
-                  Completa los pasos y únete al campamento más esperado del año.
-                </p>
-              </div>
-            </div>
-
-            {/* Steps list con react-icons */}
-            <div className="space-y-2.5">
-              {sidebarItems.map(({ Icon, text }) => (
-                <div key={text} className="flex items-center gap-3 text-sm text-white/75">
-                  <Icon className="shrink-0 text-white/80" size={18} />
-                  <span>{text}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-white/35 pt-1">
-              <PiLockSimpleLight size={14} />
-              Conexión segura · Datos protegidos
-            </div>
-          </div>
-
-          <p className="text-xs text-white/25">© {new Date().getFullYear()} Génesis</p>
-        </div>
-      </aside>
-
-      {/* ── Panel derecho ── */}
-      <main className="flex-1 flex flex-col min-w-0 lg:min-h-0 lg:overflow-hidden">
-
-        {/* Header mobile */}
-        <header className="lg:hidden shrink-0 border-b border-border bg-background/95 backdrop-blur">
-          <div className="px-5 py-3.5 flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <svg className="h-4 w-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <span className="font-bold text-foreground text-sm">Génesis</span>
-          </div>
-        </header>
-
-        {/* Eyebrow — solo desktop */}
-        <div className="hidden lg:block shrink-0 px-8 pt-4 pb-0">
-          <h2 className="text-xl font-bold text-foreground tracking-tight mt-0.5">Comencemos</h2>
-        </div>
-
-        {/* Wizard — max-width para que los inputs no se estiren */}
-        <div className="flex-1 flex flex-col px-5 sm:px-8 lg:px-8 py-4 min-h-0">
-          {/* Título solo en móvil */}
-          <div className="mb-4 lg:hidden">
-            <h1 className="text-xl font-black tracking-tight text-foreground">Inscripción</h1>
-            <p className="mt-0.5 text-sm text-muted-foreground">Completa los pasos para registrarte.</p>
-          </div>
-
-          {/* Formulario centrado en los 4/7 restantes */}
-          <div className="max-w-2xl w-full mx-auto flex-1 min-h-0 bg-card rounded-2xl p-5 border border-slate-200/60 shadow-soft flex flex-col">
-            <div className="relative z-10 flex-1 min-h-0 flex flex-col">
-              <WizardForm />
-            </div>
+        {/* Header de Marca */}
+        <div className="shrink-0 flex items-center justify-between pt-3 pb-1 sm:pt-5 sm:pb-3">
+          <div className="select-none">
+            <img src="/logo-iyg.png" alt="Logo IYF" className="h-10 sm:h-12 md:h-14 lg:h-16 object-contain" />
           </div>
         </div>
 
-        <footer className="shrink-0 border-t border-border/50 py-2 text-center text-xs text-muted-foreground bg-white">
-          © {new Date().getFullYear()} Génesis — Todos los derechos reservados.
-        </footer>
+        {/* Formulario Conversacional */}
+        <div className="flex-1 flex flex-col justify-center min-h-0 overflow-hidden">
+          <FormularioConversacional />
+        </div>
+
+        {/* Footer simple */}
+        <div className="shrink-0 pb-2 pt-2 sm:pb-3 sm:pt-3 flex items-center justify-between text-xs border-t border-border/40" style={{ color: 'var(--muted-foreground)' }}>
+          <span>© {new Date().getFullYear()} IYF Perú · Campamento Mundial</span>
+          <div className="flex items-center gap-1 opacity-60">
+            <span style={{ background: '#BE0A2F', width: 8, height: 8, borderRadius: '50%', display: 'inline-block' }} />
+            <span style={{ background: '#E8A000', width: 8, height: 8, borderRadius: '50%', display: 'inline-block' }} />
+            <span style={{ background: '#3A7D0A', width: 8, height: 8, borderRadius: '50%', display: 'inline-block' }} />
+          </div>
+        </div>
+
       </main>
+
     </div>
   );
 }

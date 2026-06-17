@@ -1,4 +1,3 @@
-import { TrendingUp } from 'lucide-react';
 import type { ElementType } from 'react';
 
 interface StatCardProps {
@@ -11,32 +10,24 @@ interface StatCardProps {
 
 const COLOR_MAP = {
   blue: {
-    bg: 'bg-blue-50/50 dark:bg-blue-950/20',
-    icon: 'text-blue-600 dark:text-blue-400',
-    iconBg: 'bg-blue-100 dark:bg-blue-900/40',
-    bar: 'bg-gradient-to-r from-blue-500 to-cyan-400',
-    border: 'border-blue-100 dark:border-blue-900/30'
+    iconColor: '#009DE1',
+    iconBg: 'rgba(0, 157, 225, 0.08)',
+    dot: '#009DE1',
   },
   green: {
-    bg: 'bg-emerald-50/50 dark:bg-emerald-950/20',
-    icon: 'text-emerald-600 dark:text-emerald-400',
-    iconBg: 'bg-emerald-100 dark:bg-emerald-900/40',
-    bar: 'bg-gradient-to-r from-emerald-500 to-teal-400',
-    border: 'border-emerald-100 dark:border-emerald-900/30'
+    iconColor: '#10B981',
+    iconBg: 'rgba(16, 185, 129, 0.08)',
+    dot: '#10B981',
   },
   purple: {
-    bg: 'bg-violet-50/50 dark:bg-violet-950/20',
-    icon: 'text-violet-600 dark:text-violet-400',
-    iconBg: 'bg-violet-100 dark:bg-violet-900/40',
-    bar: 'bg-gradient-to-r from-violet-500 to-fuchsia-400',
-    border: 'border-violet-100 dark:border-violet-900/30'
+    iconColor: '#8B5CF6',
+    iconBg: 'rgba(139, 92, 246, 0.08)',
+    dot: '#8B5CF6',
   },
   amber: {
-    bg: 'bg-amber-50/50 dark:bg-amber-950/20',
-    icon: 'text-amber-600 dark:text-amber-400',
-    iconBg: 'bg-amber-100 dark:bg-amber-900/40',
-    bar: 'bg-gradient-to-r from-amber-500 to-orange-400',
-    border: 'border-amber-100 dark:border-amber-900/30'
+    iconColor: '#F59E0B',
+    iconBg: 'rgba(245, 158, 11, 0.08)',
+    dot: '#F59E0B',
   },
 };
 
@@ -45,41 +36,38 @@ export default function StatCard({ label, value, total, icon: Icon, color }: Sta
   const pct = total && total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
-    <div className={`relative bg-card rounded-2xl border ${c.border} p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3 overflow-hidden group`}>
-      {/* Decorative gradient blur */}
-      <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${c.bar} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
-      
-      <div className="flex items-start justify-between relative z-10">
-        <div>
-          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+    <div
+      className="bg-card rounded-xl border border-border px-4 py-3.5 shadow-sm hover:shadow-md transition-all duration-150 flex items-center justify-between gap-4 animate-fade-up"
+    >
+      <div className="flex items-center gap-3">
+        {/* Compact Icon */}
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{ background: c.iconBg }}
+        >
+          <Icon className="w-4.5 h-4.5" style={{ color: c.iconColor }} />
+        </div>
+        
+        {/* Label and Value */}
+        <div className="flex flex-col">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground leading-none mb-1">
+            {label}
+          </p>
           <div className="flex items-baseline gap-1.5">
-            <p className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-none">{value}</p>
+            <p
+              className="text-lg font-bold tracking-tight leading-none"
+              style={{ color: 'var(--foreground)', fontFamily: 'var(--font-mono)' }}
+            >
+              {value.toLocaleString()}
+            </p>
             {total !== undefined && (
-              <p className="text-xs font-medium text-muted-foreground">/ {total}</p>
+              <span className="text-[10px] text-muted-foreground font-medium">
+                / {total} ({pct}%)
+              </span>
             )}
           </div>
         </div>
-        <div className={`${c.iconBg} p-2 rounded-xl shadow-sm`}>
-          <Icon className={`w-5 h-5 ${c.icon}`} />
-        </div>
       </div>
-
-      {total !== undefined && (
-        <div className="relative z-10 mt-auto">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>Progreso: {pct}%</span>
-            </div>
-          </div>
-          <div className="h-2 w-full bg-secondary/60 rounded-full overflow-hidden">
-            <div
-              className={`h-full ${c.bar} rounded-full transition-all duration-1000 ease-out`}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

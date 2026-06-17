@@ -24,14 +24,23 @@ export interface ParticipanteAdmin {
   empresaTransporte: string | null;
   nroVuelo: string | null;
   lugarLlegada: string | null;
+  // Payments
+  cuentaId?: string;
+  totalAbonado?: number;
+  tarifaCongelada?: number;
+  cuentaMoneda?: string;
 }
 
-export type EstadoRegistro = 'PRE INSCRITO' | 'CONFIRMADO' | 'PENDIENTE' | string;
+export type EstadoRegistro = 'PRE_INSCRITO' | 'FALT_TRANSPORTE' | 'PENDIENTE_PAGO' | 'PAGO_PARCIAL' | 'PAGO_COMPLETADO' | 'COMPLETADO' | string;
 
 export interface EventStats {
   total: number;
-  confirmados: number;
-  preInscritos: number;
+  preInscrito: number;
+  faltTransporte: number;
+  pendientePago: number;
+  pagoParcial: number;
+  pagoCompletado: number;
+  completado: number;
   conTransporte: number;
 }
 

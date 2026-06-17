@@ -14,15 +14,7 @@ interface ParticipantsTableProps {
 
 type SortKey = 'nombres' | 'pais' | 'estadoRegistro' | 'fechaRegistro';
 
-// Map ISO → flag emoji
-function flagEmoji(iso: string) {
-  if (!iso || iso.length !== 2) return '🌎';
-  return iso
-    .toUpperCase()
-    .split('')
-    .map(c => String.fromCodePoint(0x1f1e6 - 0x41 + c.charCodeAt(0)))
-    .join('');
-}
+// Ya no usamos emojis de bandera
 
 export default function ParticipantsTable({
   participantes,
@@ -77,38 +69,107 @@ export default function ParticipantsTable({
         <ChevronDown className="w-3 h-3" />
       )
     ) : (
-      <ChevronDown className="w-3 h-3 opacity-30" />
+      <ChevronDown className="w-3 h-3 opacity-20" />
     );
 
+  const COLS = [
+    { label: 'Participante', key: 'nombres' as SortKey },
+    { label: 'Correo', key: null },
+    { label: 'País', key: 'pais' as SortKey },
+    { label: 'Teléfono', key: null },
+    { label: 'Transporte', key: null },
+    { label: 'Pago', key: null },
+    { label: 'Estado', key: 'estadoRegistro' as SortKey },
+    { label: 'Registro', key: 'fechaRegistro' as SortKey },
+    { label: '', key: null },
+  ];
+
   return (
-    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center gap-3 p-4 border-b border-border">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+    <div
+      className="bg-transparent overflow-hidden"
+    >
+      {/* Table toolbar */}
+      <div
+        className="flex items-center gap-3 px-5 py-4"
+        style={{ borderBottom: '1px solid var(--border)' }}
+      >
+        {/* Search */}
+        <div className="relative flex-1 max-w-sm">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+            style={{ color: 'var(--muted-foreground)' }}
+          />
           <input
             type="text"
-            placeholder="Buscar por nombre, email, país…"
+            placeholder="Buscar participante…"
             value={search}
             onChange={e => {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-border/80 transition-all shadow-sm"
+            className="w-full pl-9 pr-4 py-2 text-sm rounded-lg transition-all duration-150"
+            style={{
+              background: 'var(--muted)',
+              border: '1px solid transparent',
+              color: 'var(--foreground)',
+              outline: 'none',
+            }}
+            onFocus={e => {
+              (e.target as HTMLInputElement).style.borderColor = 'var(--primary)';
+              (e.target as HTMLInputElement).style.boxShadow = '0 0 0 2px rgba(0,157,225,0.12)';
+            }}
+            onBlur={e => {
+              (e.target as HTMLInputElement).style.borderColor = 'transparent';
+              (e.target as HTMLInputElement).style.boxShadow = 'none';
+            }}
           />
         </div>
+
+        {/* Total badge */}
+        <span
+          className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+          style={{
+            background: 'var(--muted)',
+            color: 'var(--muted-foreground)',
+            fontFamily: 'var(--font-mono)',
+          }}
+        >
+          {filtered.length} participantes
+        </span>
+
+        <div className="flex-1" />
+
+        {/* Refresh */}
         <button
           onClick={onRefresh}
-          className="p-2 rounded-xl border border-border text-muted-foreground hover:bg-accent hover:text-foreground transition"
+          className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150"
           title="Actualizar"
+          style={{ border: '1px solid var(--border)', color: 'var(--muted-foreground)', background: 'transparent' }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = 'var(--muted)';
+            (e.currentTarget as HTMLElement).style.color = 'var(--foreground)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+            (e.currentTarget as HTMLElement).style.color = 'var(--muted-foreground)';
+          }}
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="w-3.5 h-3.5" />
         </button>
+
+        {/* Add */}
         <button
           onClick={onAddNew}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-white"
+          style={{ background: 'var(--primary)' }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = '#0085C1';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = 'var(--primary)';
+          }}
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
           Agregar
         </button>
       </div>
@@ -117,21 +178,14 @@ export default function ParticipantsTable({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/30">
-              {[
-                { label: 'Participante', key: 'nombres' as SortKey },
-                { label: 'País', key: 'pais' as SortKey },
-                { label: 'Teléfono', key: null },
-                { label: 'Transporte', key: null },
-                { label: 'Estado', key: 'estadoRegistro' as SortKey },
-                { label: 'Registro', key: 'fechaRegistro' as SortKey },
-                { label: '', key: null },
-              ].map(col => (
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              {COLS.map(col => (
                 <th
                   key={col.label}
-                  className={`text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide ${
-                    col.key ? 'cursor-pointer hover:text-foreground select-none' : ''
+                  className={`text-left px-5 py-2.5 text-[10px] font-semibold uppercase tracking-widest ${
+                    col.key ? 'cursor-pointer select-none' : ''
                   }`}
+                  style={{ color: 'var(--muted-foreground)' }}
                   onClick={() => col.key && toggleSort(col.key)}
                 >
                   <span className="flex items-center gap-1">
@@ -142,121 +196,182 @@ export default function ParticipantsTable({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+
+          <tbody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-border animate-pulse">
-                  {Array.from({ length: 7 }).map((_, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-muted rounded-lg" />
+                <tr key={i} style={{ borderBottom: '1px solid var(--border)' }} className="odd:bg-white even:bg-muted/30">
+                  {Array.from({ length: 9 }).map((_, j) => (
+                    <td key={j} className="px-5 py-3">
+                      <div
+                        className="h-3.5 rounded animate-pulse"
+                        style={{
+                          width: j === 0 ? '60%' : j === 8 ? '20%' : '45%',
+                          background: 'var(--muted)',
+                        }}
+                      />
                     </td>
                   ))}
                 </tr>
               ))
             ) : paged.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
+                <td
+                  colSpan={9}
+                  className="px-5 py-14 text-center text-sm"
+                  style={{ color: 'var(--muted-foreground)' }}
+                >
                   {search ? 'Sin resultados para la búsqueda.' : 'No hay participantes registrados aún.'}
                 </td>
               </tr>
             ) : (
-              paged.map(p => (
+              paged.map((p) => (
                 <tr
                   key={p.id}
-                  className="border-b border-border hover:bg-accent/40 transition-colors cursor-pointer group"
+                  className="group cursor-pointer transition-colors duration-100 odd:bg-white even:bg-muted/40 hover:bg-accent/60"
+                  style={{ borderBottom: '1px solid rgba(0,0,0,0.03)' }}
                   onClick={() => onViewDetail(p)}
                 >
                   {/* Participante */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-semibold text-xs">
-                          {p.nombres.charAt(0).toUpperCase()}
-                          {p.apellidos.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground leading-tight">
-                          {p.nombres} {p.apellidos}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{p.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  {/* País */}
-                  <td className="px-4 py-3">
-                    <span className="flex items-center gap-1.5">
-                      <span className="text-base leading-none">{flagEmoji(p.pais)}</span>
-                      <span className="text-foreground">{p.pais}</span>
+                  <td className="px-5 py-2.5">
+                    <span className="font-medium text-[13px] leading-tight" style={{ color: 'var(--foreground)' }}>
+                      {p.nombres} {p.apellidos}
                     </span>
                   </td>
-                  {/* Teléfono */}
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {p.telefono ?? <span className="text-muted-foreground/50">—</span>}
+
+                  {/* Correo */}
+                  <td className="px-5 py-2.5 text-[12px]" style={{ color: 'var(--muted-foreground)' }}>
+                    {p.email}
                   </td>
+
+                  {/* País */}
+                  <td className="px-5 py-2.5">
+                    <span className="flex items-center gap-1.5 text-[13px]" style={{ color: 'var(--foreground)' }}>
+                      <span
+                        className="font-mono text-[13px] font-semibold"
+                        style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted-foreground)' }}
+                      >
+                        {p.pais}
+                      </span>
+                    </span>
+                  </td>
+
+                  {/* Teléfono */}
+                  <td
+                    className="px-5 py-2.5 text-[12px]"
+                    style={{ color: 'var(--muted-foreground)', fontFamily: 'var(--font-mono)' }}
+                  >
+                    {p.telefono ?? <span style={{ opacity: 0.35 }}>—</span>}
+                  </td>
+
                   {/* Transporte */}
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-2.5">
                     {p.tipoTransporte ? (
-                      <span className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">
-                        {p.tipoTransporte === 'AEREO' ? '✈️' : p.tipoTransporte === 'TERRESTRE' ? '🚌' : '🚶'}{' '}
+                      <span
+                        className="inline-flex items-center text-[11px] font-medium capitalize"
+                        style={{ color: '#0070A3' }}
+                      >
                         {p.tipoTransporte}
                       </span>
                     ) : (
-                      <span className="text-muted-foreground/50 text-xs">—</span>
+                      <span style={{ color: 'var(--muted-foreground)', opacity: 0.35, fontSize: 12 }}>—</span>
                     )}
                   </td>
+
+                  {/* Pago */}
+                  <td className="px-5 py-2.5">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-mono text-[11px] font-bold" style={{ color: 'var(--foreground)' }}>
+                        ${p.totalAbonado ?? 0} <span className="opacity-50 font-normal">/ ${p.tarifaCongelada ?? 0}</span>
+                      </span>
+                      {(p.totalAbonado ?? 0) >= (p.tarifaCongelada ?? 0) && (p.tarifaCongelada ?? 0) > 0 && (
+                        <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-600">Cubierto</span>
+                      )}
+                    </div>
+                  </td>
+
                   {/* Estado */}
-                  <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                  <td className="px-5 py-2.5" onClick={e => e.stopPropagation()}>
                     <StatusBadge estado={p.estadoRegistro} />
                   </td>
+
                   {/* Fecha */}
-                  <td className="px-4 py-3 text-muted-foreground text-xs">
+                  <td
+                    className="px-5 py-2.5 text-[11px]"
+                    style={{ color: 'var(--muted-foreground)', fontFamily: 'var(--font-mono)' }}
+                  >
                     {new Date(p.fechaRegistro).toLocaleDateString('es-PE', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric',
                     })}
                   </td>
+
                   {/* Acciones */}
-                  <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                    <ParticipantActionMenu
-                      participante={p}
-                      onViewDetail={onViewDetail}
-                    />
+                  <td className="px-5 py-2.5" onClick={e => e.stopPropagation()}>
+                    <ParticipantActionMenu participante={p} onViewDetail={onViewDetail} />
                   </td>
                 </tr>
               ))
             )}
-            
-            {/* Filas vacías para mantener altura constante */}
+
+            {/* Empty filler rows */}
             {!loading && paged.length > 0 && Array.from({ length: emptyRows }).map((_, i) => (
-              <tr key={`empty-${i}`} className="h-[65px] opacity-0 pointer-events-none">
-                <td colSpan={7}></td>
+              <tr key={`empty-${i}`} className="pointer-events-none opacity-0" style={{ height: 49 }}>
+                <td colSpan={9} />
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination (siempre visible) */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-card mt-auto">
-        <p className="text-xs text-muted-foreground">
-          {filtered.length} participantes · página {page} de {totalPages}
+      {/* Pagination */}
+      <div
+        className="flex items-center justify-between px-5 py-3"
+        style={{ borderTop: '1px solid var(--border)' }}
+      >
+        <p
+          className="text-[11px]"
+          style={{ color: 'var(--muted-foreground)', fontFamily: 'var(--font-mono)' }}
+        >
+          {filtered.length} registros · pág. {page} / {totalPages}
         </p>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <button
             disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}
-            className="px-3 py-1.5 text-xs rounded-lg border border-border hover:bg-accent disabled:opacity-40 transition"
+            className="px-3 py-1.5 text-[11px] rounded-md font-medium transition-all duration-150 disabled:opacity-30"
+            style={{
+              border: '1px solid var(--border)',
+              color: 'var(--foreground)',
+              background: 'transparent',
+            }}
+            onMouseEnter={e => {
+              if (page !== 1) (e.currentTarget as HTMLElement).style.background = 'var(--muted)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+            }}
           >
-            Anterior
+            ← Anterior
           </button>
           <button
             disabled={page === totalPages || totalPages === 0}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            className="px-3 py-1.5 text-xs rounded-lg border border-border hover:bg-accent disabled:opacity-40 transition"
+            className="px-3 py-1.5 text-[11px] rounded-md font-medium transition-all duration-150 disabled:opacity-30"
+            style={{
+              border: '1px solid var(--border)',
+              color: 'var(--foreground)',
+              background: 'transparent',
+            }}
+            onMouseEnter={e => {
+              if (page !== totalPages) (e.currentTarget as HTMLElement).style.background = 'var(--muted)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+            }}
           >
-            Siguiente
+            Siguiente →
           </button>
         </div>
       </div>

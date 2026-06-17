@@ -1,43 +1,55 @@
+import React from 'react';
 import type { StepProps } from '../../types/participante.types';
 import { CondParticipacion, TipoTransporte } from '../../types/participante.types';
 import { findCountry } from '@/lib/countryOptions';
-import { PiUserLight, PiTargetLight, PiBusLight } from 'react-icons/pi';
-import React from 'react';
 
 interface StepResumenProps extends StepProps {
   transportSkipped: boolean;
   showTransport: boolean;
 }
 
-interface SummaryRowProps {
+interface FilaProps {
   label: string;
   value: string | null | undefined;
+  highlight?: boolean;
 }
 
-function SummaryRow({ label, value }: SummaryRowProps) {
+function Fila({ label, value, highlight }: FilaProps) {
   if (!value) return null;
   return (
-    <div className="flex items-center justify-between py-3 px-4 sm:px-5 border-b border-border/40 last:border-0 bg-background hover:bg-secondary/20 transition-colors">
-      <span className="text-[13px] text-muted-foreground">{label}</span>
-      <span className="text-[14px] font-medium text-foreground text-right max-w-[60%] truncate" title={value}>
+    <tr className="border-b border-border/40 last:border-0">
+      <td
+        className="py-1.5 pr-4 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap align-top"
+        style={{ color: 'var(--muted-foreground)', width: '40%' }}
+      >
+        {label}
+      </td>
+      <td
+        className="py-1.5 text-xs font-medium align-top break-words"
+        style={{
+          color: highlight ? '#BE0A2F' : 'var(--foreground)',
+          maxWidth: 0,
+          width: '60%',
+        }}
+      >
         {value}
-      </span>
-    </div>
+      </td>
+    </tr>
   );
 }
 
-function SummarySection({ title, icon: Icon, children }: { title: string, icon: React.ElementType, children: React.ReactNode }) {
+function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
-    <div className="mb-6">
-      <div className="flex items-center gap-2 mb-2 px-2">
-        <Icon className="text-primary/70 shrink-0" size={18} />
-        <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
-      </div>
-      <div className="overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm ring-1 ring-border/30">
-        <div className="flex flex-col">
-          {children}
-        </div>
-      </div>
+    <div>
+      <p
+        className="text-[9px] font-black uppercase tracking-widest mb-1 pb-1 border-b border-border"
+        style={{ color: 'var(--muted-foreground)', letterSpacing: '0.12em' }}
+      >
+        {titulo}
+      </p>
+      <table className="w-full border-collapse">
+        <tbody>{children}</tbody>
+      </table>
     </div>
   );
 }
@@ -47,101 +59,89 @@ export default function StepResumen({
   transportSkipped,
   showTransport,
 }: StepResumenProps) {
-  const showCargo = formData.condParticipacion === CondParticipacion.MIEMBRO;
+  const mostrarCargo = formData.condParticipacion === CondParticipacion.MIEMBRO;
   const tipo = formData.tipoTransporte;
 
+  const labelTransporte =
+    tipo === 'AEREO'
+      ? 'Vuelo Aéreo ✈'
+      : tipo === 'TERRESTRE'
+        ? 'Ruta Terrestre 🚌'
+        : tipo === 'INDEPENDIENTE'
+          ? 'Viaje Independiente 🚗'
+          : '';
+
   return (
-    <div className="space-y-2">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-          Confirmación de Datos
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Revisa tu información detenidamente antes de enviar. Puedes regresar si necesitas corregir algo.
-        </p>
-      </div>
+    <div className="w-full">
+      {/* Layout dos columnas en pantallas medianas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
-      {/* Datos Personales y Contacto */}
-      <SummarySection title="Datos Personales y Contacto" icon={PiUserLight}>
-        <SummaryRow
-          label="Tipo de Documento"
-          value={formData.tipoDocumento.replace(/_/g, ' ')}
-        />
-        <SummaryRow label="Nro. Documento" value={formData.nroDocumento} />
-        <SummaryRow label="Nombres" value={formData.nombres} />
-        <SummaryRow label="Apellidos" value={formData.apellidos} />
-        <SummaryRow label="Correo Electrónico" value={formData.email} />
-        <SummaryRow label="País" value={findCountry(formData.pais)?.label ?? formData.pais} />
-        <SummaryRow label="Sede" value={formData.sede} />
-        <SummaryRow label="Teléfono" value={formData.telefono} />
-        <SummaryRow label="Género" value={formData.genero} />
-        <SummaryRow
-          label="Fecha de Nacimiento"
-          value={formData.fechaNacimiento}
-        />
-        <SummaryRow label="Talla de Polo" value={formData.tallaPolo} />
-      </SummarySection>
+        {/* Columna 1: Identidad + Contacto */}
+        <div className="space-y-4">
+          <Seccion titulo="Identidad">
+            <Fila label="Tipo Doc." value={formData.tipoDocumento.replace(/_/g, ' ')} />
+            <Fila label="Nro. Documento" value={formData.nroDocumento} />
+            <Fila label="Nombres" value={formData.nombres} />
+            <Fila label="Apellidos" value={formData.apellidos} />
+            <Fila label="Fecha Nac." value={formData.fechaNacimiento} />
+            <Fila label="Género" value={formData.genero} />
+          </Seccion>
 
-      {/* Participación */}
-      <SummarySection title="Participación" icon={PiTargetLight}>
-        <SummaryRow label="Condición" value={formData.condParticipacion} />
-        {showCargo && <SummaryRow label="Cargo/Rol" value={formData.rol} />}
-      </SummarySection>
+          <Seccion titulo="Contacto">
+            <Fila label="País" value={findCountry(formData.pais)?.label ?? formData.pais} />
+            {formData.sede && <Fila label="Sede" value={formData.sede} />}
+            <Fila label="Teléfono" value={formData.telefono} />
+            <Fila label="Correo" value={formData.email} />
+          </Seccion>
+        </div>
 
-      {/* Transporte */}
-      {showTransport && (
-        <SummarySection title="Logística y Transporte" icon={PiBusLight}>
-          {transportSkipped ? (
-            <div className="py-4 px-5 bg-background">
-              <p className="text-sm italic text-muted-foreground text-center">
-                Has omitido el registro de transporte.
-              </p>
-            </div>
-          ) : (
-            <>
-              <SummaryRow
-                label="Medio de Transporte"
-                value={
-                  tipo === 'AEREO'
-                    ? 'Vuelo Aéreo'
-                    : tipo === 'TERRESTRE'
-                      ? 'Ruta Terrestre'
-                      : tipo === 'INDEPENDIENTE'
-                        ? 'Viaje Independiente'
-                        : ''
-                }
-              />
-              {(tipo === TipoTransporte.AEREO ||
-                tipo === TipoTransporte.TERRESTRE) && (
-                <SummaryRow
-                  label="Empresa"
-                  value={formData.empresaTransporte}
-                />
+        {/* Columna 2: Participación + Transporte */}
+        <div className="space-y-4">
+          <Seccion titulo="Participación">
+            <Fila label="Talla Polo" value={formData.tallaPolo} />
+            <Fila label="Condición" value={formData.condParticipacion} />
+            {mostrarCargo && <Fila label="Cargo / Rol" value={formData.rol} />}
+          </Seccion>
+
+          {showTransport && (
+            <Seccion titulo="Logística y Transporte">
+              {transportSkipped ? (
+                <tr>
+                  <td colSpan={2} className="py-2 text-xs italic" style={{ color: 'var(--muted-foreground)' }}>
+                    Transporte no registrado aún.
+                  </td>
+                </tr>
+              ) : (
+                <>
+                  <Fila label="Medio" value={labelTransporte} />
+                  {(tipo === TipoTransporte.AEREO || tipo === TipoTransporte.TERRESTRE) && (
+                    <Fila label="Empresa" value={formData.empresaTransporte} />
+                  )}
+                  {tipo === TipoTransporte.AEREO && (
+                    <Fila label="Nro. Vuelo" value={formData.nroVuelo} />
+                  )}
+                  <Fila label="Llegada" value={formData.fechaLlegada} />
+                  <Fila label="Retorno" value={formData.fechaIda} />
+                  {tipo === TipoTransporte.TERRESTRE && (
+                    <Fila label="Lugar Llegada" value={formData.lugarLlegada} />
+                  )}
+                  {(formData.boletoUrl || formData.boletoNombre) && (
+                    <Fila label="Comprobante" value={formData.boletoNombre || 'Adjunto'} />
+                  )}
+                </>
               )}
-              {tipo === TipoTransporte.AEREO && (
-                <SummaryRow label="Nro. de Vuelo" value={formData.nroVuelo} />
-              )}
-              <SummaryRow
-                label="Fecha de Llegada"
-                value={formData.fechaLlegada}
-              />
-              <SummaryRow label="Fecha de Salida" value={formData.fechaIda} />
-              {tipo === TipoTransporte.TERRESTRE && (
-                <SummaryRow
-                  label="Lugar de Llegada"
-                  value={formData.lugarLlegada}
-                />
-              )}
-              {(formData.boletoUrl || formData.boletoNombre) && (
-                <SummaryRow
-                  label="Boleto"
-                  value={formData.boletoNombre || 'Documento adjunto'}
-                />
-              )}
-            </>
+            </Seccion>
           )}
-        </SummarySection>
-      )}
+
+          {/* Mensaje de confirmación — solo texto */}
+          <p className="text-sm pt-1" style={{ color: 'var(--muted-foreground)' }}>
+            ¿Todo correcto?{' '}
+            <span className="font-bold" style={{ color: '#BE0A2F' }}>
+              Presiona Enviar Registro para confirmar tu inscripción.
+            </span>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

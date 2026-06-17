@@ -1,6 +1,27 @@
 import { useState, useEffect } from 'react';
-import { X, User, Plane, AlertCircle } from 'lucide-react';
+import { X, User, Navigation, Calendar, Hash, MapPin, Bus, AlertCircle, Plane } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+} from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { useWizardForm } from '../../formulario/hooks/useWizardForm';
 import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
@@ -10,6 +31,7 @@ import {
   GENEROS, 
   TALLAS_POLO, 
   SEDES_OPCIONES, 
+  SEDES_LIMA_OPCIONES,
   MED_TRANSPORTE_OPCIONES, 
   CONDICION_PARTICIPACION_OPCIONES, 
   ROLES_OPCIONES, 
@@ -34,33 +56,45 @@ export default function AddParticipantModal({ open, onClose }: AddParticipantMod
     reset,
     validationErrors,
     validateAll,
-    error: submitError
-  } = useWizardForm();
+    error: submitError,
+    showTransport
+  } = useWizardForm(true); 
 
-  // Reset state when opening/closing
+  const userJson = localStorage.getItem('user');
+  const user = userJson ? JSON.parse(userJson) : null;
+  const isCountryAdmin = user?.rol === 'ROLE_COUNTRY_ADMIN';
+  const userCountry = user?.pais;
+
   useEffect(() => {
     if (open) {
       reset();
+      if (isCountryAdmin && userCountry) {
+        updateField('pais', userCountry);
+        const countryData = findCountry(userCountry);
+        if (countryData) updateField('telefono', countryData.phoneCode);
+      }
+      setTab('personal');
     }
-  }, [open, reset]);
+  }, [open, reset, isCountryAdmin, userCountry, updateField]);
 
-  // Close when success
   useEffect(() => {
-    if (isSuccess) {
-      onClose();
+    if (!showTransport && tab === 'viaje') {
+      setTab('personal');
     }
-  }, [isSuccess, onClose]);
+  }, [showTransport, tab]);
+
+  useEffect(() => {
+    if (isSuccess && open) onClose();
+  }, [isSuccess, open, onClose]);
 
   if (!open) return null;
 
   const handleSave = async () => {
     if (!validateAll()) {
-      // Si hay errores, forzamos la vista al tab que tenga el error para que el usuario lo vea
-      // (Por heurística simple, si no hay 'tipoTransporte' valid fallará en transporte, pero personal primero)
       if (validationErrors.nombres || validationErrors.email || validationErrors.pais || validationErrors.tipoDocumento) {
-         setTab('personal');
+        setTab('personal');
       } else if (validationErrors.tipoTransporte || validationErrors.nroVuelo) {
-         setTab('viaje');
+        setTab('viaje');
       }
       return; 
     }
@@ -68,109 +102,109 @@ export default function AddParticipantModal({ open, onClose }: AddParticipantMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+    <Sheet open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
+      <SheetContent side="left" className="w-full sm:max-w-xl p-0 overflow-hidden bg-card border-r border-border flex flex-col">
+        <SheetHeader className="px-6 py-4 border-b border-border">
+          <SheetTitle className="text-[15px] font-semibold text-foreground">
+            Agregar Participante
+          </SheetTitle>
+          <SheetDescription className="text-xs text-muted-foreground mt-0.5">
+            Completa los datos del nuevo participante
+          </SheetDescription>
+        </SheetHeader>
 
-      {/* Modal */}
-      <div className="relative bg-card rounded-2xl shadow-2xl w-full max-w-lg z-10 flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <div>
-            <h2 className="text-lg font-bold text-foreground">Agregar Participante</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Completa los datos usando el formulario unificado</p>
+        <Tabs value={tab} onValueChange={(val) => setTab(val as 'personal' | 'viaje')} className="flex flex-col">
+          <div className="px-6 pt-4 pb-2">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="personal" className="text-xs">
+                <User className="w-3.5 h-3.5 mr-2" />
+                Datos Personales
+              </TabsTrigger>
+              <TabsTrigger value="viaje" disabled={!showTransport} className="text-xs">
+                <Plane className="w-3.5 h-3.5 mr-2" />
+                Itinerario
+              </TabsTrigger>
+            </TabsList>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-accent transition" disabled={isSubmitting}>
-            <X className="w-4 h-4" />
-          </button>
-        </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-border px-6">
-          <button
-            onClick={() => setTab('personal')}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition ${
-              tab === 'personal'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <User className="w-4 h-4" /> Datos Personales & Participación
-          </button>
-          <button
-            onClick={() => setTab('viaje')}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition ${
-              tab === 'viaje'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Plane className="w-4 h-4" /> Itinerario de viaje
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          
-          {submitError && (
-             <div className="flex items-center gap-2 p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl mb-4">
+          <div className="flex-1 overflow-y-auto thin-scrollbar px-6 py-4 space-y-5 max-h-[60vh]">
+            {submitError && (
+              <div className="flex items-center gap-2.5 p-3.5 rounded-lg text-xs bg-destructive/10 border border-destructive/20 text-destructive">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <p>{submitError}</p>
-             </div>
-          )}
+              </div>
+            )}
 
-          {tab === 'personal' ? (
-            <>
+            <TabsContent value="personal" className="mt-0 space-y-4 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0">
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Tipo de documento" error={validationErrors.tipoDocumento}>
-                  <select 
-                    className="input-field bg-background" 
-                    value={formData.tipoDocumento} 
-                    onChange={e => updateField('tipoDocumento', e.target.value as TipoDocumento)}
-                  >
-                    <option value="">Seleccionar…</option>
-                    {TIPOS_DOCUMENTO.map(o => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.tipoDocumento} onValueChange={val => updateField('tipoDocumento', val as TipoDocumento)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIPOS_DOCUMENTO.map(o => (
+                        <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Nro. documento" error={validationErrors.nroDocumento}>
-                  <input type="text" placeholder="12345678" className="input-field bg-background" 
-                    value={formData.nroDocumento} onChange={e => updateField('nroDocumento', e.target.value)} />
+                  <Input
+                    placeholder="12345678"
+                    value={formData.nroDocumento}
+                    onChange={e => updateField('nroDocumento', e.target.value)}
+                  />
                 </Field>
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Nombres" error={validationErrors.nombres}>
-                  <input type="text" placeholder="Juan" className="input-field bg-background" 
-                    value={formData.nombres} onChange={e => updateField('nombres', e.target.value)} />
+                  <Input
+                    placeholder="Juan"
+                    value={formData.nombres}
+                    onChange={e => updateField('nombres', e.target.value)}
+                  />
                 </Field>
                 <Field label="Apellidos" error={validationErrors.apellidos}>
-                  <input type="text" placeholder="Pérez" className="input-field bg-background" 
-                     value={formData.apellidos} onChange={e => updateField('apellidos', e.target.value)} />
+                  <Input
+                    placeholder="Pérez"
+                    value={formData.apellidos}
+                    onChange={e => updateField('apellidos', e.target.value)}
+                  />
                 </Field>
               </div>
+
               <Field label="Email" error={validationErrors.email}>
-                <input type="email" placeholder="juan@email.com" className="input-field bg-background" 
-                   value={formData.email} onChange={e => updateField('email', e.target.value)} />
+                <Input
+                  type="email"
+                  placeholder="juan@email.com"
+                  value={formData.email}
+                  onChange={e => updateField('email', e.target.value)}
+                />
               </Field>
+
               <div className="grid grid-cols-2 gap-4">
                 <Field label="País" error={validationErrors.pais}>
-                   <select 
-                     className="input-field bg-background" 
-                     value={formData.pais} 
-                     onChange={e => {
-                       const val = e.target.value;
-                       updateField('pais', val);
-                       updateField('sede', '');
-                       const country = findCountry(val);
-                       if (country) updateField('telefono', country.phoneCode);
-                     }}
-                   >
-                    <option value="">Seleccionar…</option>
-                    {COUNTRY_OPTIONS.map(c => (
-                      <option key={c.value} value={c.value}>{c.label}</option>
-                    ))}
-                  </select>
+                  <Select 
+                    value={formData.pais} 
+                    disabled={isCountryAdmin}
+                    onValueChange={val => {
+                      updateField('pais', val);
+                      updateField('sede', '');
+                      const country = findCountry(val);
+                      if (country) updateField('telefono', country.phoneCode);
+                    }}
+                  >
+                    <SelectTrigger className={isCountryAdmin ? "opacity-80" : ""}>
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COUNTRY_OPTIONS.filter(c => !isCountryAdmin || c.value === userCountry).map(c => (
+                        <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Teléfono" error={validationErrors.telefono}>
                   <PhoneInput
@@ -185,32 +219,51 @@ export default function AddParticipantModal({ open, onClose }: AddParticipantMod
                         updateField('sede', '');
                       }
                     }}
-                    className="phone-input-custom !bg-background !border-border"
+                    className="phone-input-custom"
                   />
                 </Field>
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 {formData.pais === 'PE' ? (
                   <Field label="Sede" error={validationErrors.sede}>
-                    <select className="input-field bg-background" value={formData.sede} onChange={e => updateField('sede', e.target.value)}>
-                      <option value="">Seleccionar…</option>
-                      {SEDES_OPCIONES.map(s => (
-                        <option key={s.value} value={s.value}>{s.label}</option>
-                      ))}
-                    </select>
+                    <Select value={formData.sede} onValueChange={val => updateField('sede', val)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Lima</SelectLabel>
+                          {SEDES_LIMA_OPCIONES.map(s => (
+                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Provincias</SelectLabel>
+                          {SEDES_OPCIONES.map(s => (
+                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </Field>
                 ) : (
-                  <div /> // Espaciador para mantener el grid
+                  <div />
                 )}
                 <Field label="Género" error={validationErrors.genero}>
-                  <select className="input-field bg-background" value={formData.genero} onChange={e => updateField('genero', e.target.value)}>
-                    <option value="">Seleccionar…</option>
-                    {GENEROS.map(g => (
-                      <option key={g.value} value={g.value}>{g.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.genero} onValueChange={val => updateField('genero', val)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GENEROS.map(g => (
+                        <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Fecha de nacimiento" error={validationErrors.fechaNacimiento}>
                   <DatePicker
@@ -222,111 +275,161 @@ export default function AddParticipantModal({ open, onClose }: AddParticipantMod
                   />
                 </Field>
                 <Field label="Talla polo" error={validationErrors.tallaPolo}>
-                  <select className="input-field bg-background" value={formData.tallaPolo} onChange={e => updateField('tallaPolo', e.target.value)}>
-                    <option value="">Seleccionar…</option>
-                    {TALLAS_POLO.map(t => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.tallaPolo} onValueChange={val => updateField('tallaPolo', val)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TALLAS_POLO.map(t => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
               </div>
-              <div className="grid grid-cols-2 gap-4 border-t border-border pt-4 mt-2">
+
+              <div className="grid grid-cols-2 gap-4 pt-4 mt-2 border-t border-border">
                 <Field label="Condición" error={validationErrors.condParticipacion}>
-                  <select className="input-field bg-background" value={formData.condParticipacion} onChange={e => updateField('condParticipacion', e.target.value as CondParticipacion)}>
-                    <option value="">Seleccionar…</option>
-                     {CONDICION_PARTICIPACION_OPCIONES.map(c => (
-                        <option key={c.value} value={c.value}>{c.label}</option>
-                     ))}
-                  </select>
+                  <Select value={formData.condParticipacion} onValueChange={val => updateField('condParticipacion', val as CondParticipacion)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CONDICION_PARTICIPACION_OPCIONES.map(c => (
+                        <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Rol (si es Miembro)" error={validationErrors.rol}>
                   {formData.condParticipacion === 'MIEMBRO' ? (
-                    <select className="input-field bg-background" value={formData.rol} onChange={e => updateField('rol', e.target.value)}>
-                      <option value="">Seleccionar…</option>
-                       {ROLES_OPCIONES.map(r => (
-                          <option key={r.value} value={r.value}>{r.label}</option>
-                       ))}
-                    </select>
+                    <Select value={formData.rol} onValueChange={val => updateField('rol', val)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROLES_OPCIONES.map(r => (
+                          <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   ) : (
-                    <div className="input-field bg-muted/50 border-dashed text-muted-foreground flex items-center justify-center opacity-50 cursor-not-allowed">
+                    <div className="flex h-10 w-full rounded-md border border-dashed border-border bg-muted/50 px-3 py-2 text-sm text-muted-foreground opacity-50 cursor-not-allowed items-center select-none">
                       No aplica
                     </div>
                   )}
                 </Field>
               </div>
-            </>
-          ) : (
-            <>
+            </TabsContent>
+
+            <TabsContent value="viaje" className="mt-0 space-y-4 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0">
               <Field label="Tipo de transporte" error={validationErrors.tipoTransporte}>
-                <select className="input-field bg-background" value={formData.tipoTransporte} onChange={e => updateField('tipoTransporte', e.target.value as TipoTransporte)}>
-                   <option value="">Sin transporte</option>
-                   {MED_TRANSPORTE_OPCIONES.map(o => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
+                <Select value={formData.tipoTransporte || "none"} onValueChange={val => updateField('tipoTransporte', val === "none" ? "" : val as TipoTransporte)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sin transporte</SelectItem>
+                    {MED_TRANSPORTE_OPCIONES.map(o => (
+                      <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                     ))}
-                </select>
+                  </SelectContent>
+                </Select>
               </Field>
               
-              {formData.tipoTransporte && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Aerolínea / Empresa" error={validationErrors.empresaTransporte}>
-                      <input type="text" placeholder="Ej. LATAM Airlines" className="input-field bg-background" 
-                        value={formData.empresaTransporte} onChange={e => updateField('empresaTransporte', e.target.value)} />
+              {formData.tipoTransporte && formData.tipoTransporte !== TipoTransporte.INDEPENDIENTE && (
+                <div className="space-y-4 pt-2">
+                  {(formData.tipoTransporte === TipoTransporte.AEREO || formData.tipoTransporte === TipoTransporte.TERRESTRE) && (
+                    <div className={`grid ${formData.tipoTransporte === TipoTransporte.AEREO ? 'grid-cols-2 gap-4' : 'grid-cols-1'}`}>
+                      <Field label="Aerolínea / Empresa" error={validationErrors.empresaTransporte}>
+                        <Input
+                          placeholder="Ej. LATAM Airlines"
+                          value={formData.empresaTransporte}
+                          onChange={e => updateField('empresaTransporte', e.target.value)}
+                        />
+                      </Field>
+                      {formData.tipoTransporte === TipoTransporte.AEREO && (
+                        <Field label="Nro. vuelo / Placa" error={validationErrors.nroVuelo}>
+                          <Input
+                            placeholder="LA1234"
+                            value={formData.nroVuelo}
+                            onChange={e => updateField('nroVuelo', e.target.value)}
+                          />
+                        </Field>
+                      )}
+                    </div>
+                  )}
+
+                  {formData.tipoTransporte === TipoTransporte.TERRESTRE && (
+                    <Field label="Lugar de llegada" error={validationErrors.lugarLlegada}>
+                      <Input
+                        placeholder="Ej. Terminal Terrestre"
+                        value={formData.lugarLlegada}
+                        onChange={e => updateField('lugarLlegada', e.target.value)}
+                      />
                     </Field>
-                    <Field label="Nro. vuelo / Placa" error={validationErrors.nroVuelo}>
-                      <input type="text" placeholder="LA1234" className="input-field bg-background" 
-                        value={formData.nroVuelo} onChange={e => updateField('nroVuelo', e.target.value)} />
+                  )}
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <Field label="Fechas de Llegada y Salida">
+                      <DateRangePicker
+                        fromValue={formData.fechaLlegada}
+                        toValue={formData.fechaIda}
+                        onFromChange={(val) => updateField('fechaLlegada', val)}
+                        onToChange={(val) => updateField('fechaIda', val)}
+                        fromError={validationErrors.fechaLlegada}
+                        toError={validationErrors.fechaIda}
+                      />
                     </Field>
                   </div>
-                  <Field label="Lugar de llegada" error={validationErrors.lugarLlegada}>
-                    <input type="text" placeholder="Av. Principal 123" className="input-field bg-background" 
-                      value={formData.lugarLlegada} onChange={e => updateField('lugarLlegada', e.target.value)} />
-                  </Field>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Fecha y Hora de llegada" error={validationErrors.fechaLlegada}>
-                      <input type="datetime-local" className="input-field bg-background" 
-                        value={formData.fechaLlegada} onChange={e => updateField('fechaLlegada', e.target.value)} />
-                    </Field>
-                    <Field label="Fecha y Hora de retorno" error={validationErrors.fechaIda}>
-                      <input type="datetime-local" className="input-field bg-background" 
-                        value={formData.fechaIda} onChange={e => updateField('fechaIda', e.target.value)} />
-                    </Field>
-                  </div>
-                </>
+                </div>
               )}
-            </>
-          )}
-        </div>
+            </TabsContent>
+          </div>
+        </Tabs>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-border bg-muted/30 rounded-b-2xl">
-          <button onClick={onClose} disabled={isSubmitting} className="px-4 py-2 text-sm rounded-xl border border-border hover:bg-accent transition disabled:opacity-50">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-border bg-muted/30">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="text-xs font-medium"
+          >
             Cancelar
-          </button>
-          <button 
-             onClick={handleSave} 
-             disabled={isSubmitting}
-             className="flex items-center gap-2 px-5 py-2 text-sm rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition shadow-sm disabled:opacity-75"
+          </Button>
+          <Button 
+            onClick={handleSave} 
+            disabled={isSubmitting}
+            className="text-xs font-semibold gap-2"
           >
             {isSubmitting ? (
               <>
-                 <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                 Guardando...
+                <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                Guardando…
               </>
-            ) : "Guardar participante"}
-          </button>
+            ) : (
+              'Guardar participante'
+            )}
+          </Button>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <Label className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </Label>
       {children}
-      {error && <span className="text-[10px] text-red-500 font-medium px-1 leading-tight">{error}</span>}
+      {error && (
+        <span className="text-[11px] font-medium leading-tight text-destructive">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

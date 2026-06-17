@@ -32,7 +32,7 @@ export const participanteService = {
   /**
    * Crea un participante enviando todos los datos (boletoUrl ya es la URL de Cloudinary).
    */
-  create: async (data: ParticipanteFormData) => {
+  create: async (data: ParticipanteFormData, isAdmin: boolean = false) => {
     // boletoNombre es solo visual — no se envía al backend
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { boletoNombre, ...rest } = data;
@@ -42,7 +42,8 @@ export const participanteService = {
       Object.entries(rest).map(([k, v]) => [k, v === '' ? null : v])
     );
 
-    const response = await axiosInstance.post('/api/v1/participantes', body);
+    const endpoint = isAdmin ? '/api/v1/participantes/admin' : '/api/v1/participantes';
+    const response = await axiosInstance.post(endpoint, body);
     return response.data;
   },
 

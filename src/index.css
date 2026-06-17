@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -46,80 +47,535 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  /* ── Limitless / IYF India Aesthetic (Light Mode Default) ── */
-  --background: #fcfcfe;
-  /* Faint lavender-white like visitors.now */
-  --foreground: #181925;
-  /* Deep charcoal */
-  --card: #ffffff;
-  --card-foreground: #181925;
-  --popover: #ffffff;
-  --popover-foreground: #181925;
-  --primary: #009DE1;
-  /* Visitors.now Lavender Purple */
-  --primary-foreground: #ffffff;
-  --secondary: #f5f5ff;
-  /* Soft lavender tint */
-  --secondary-foreground: #181925;
-  --muted: #f7f7fb;
-  --muted-foreground: #666666;
-  --accent: #f0effe;
-  /* Very light lavender */
-  --accent-foreground: #3d38a0;
-  --destructive: #ef4444;
-  --border: #e8e8f0;
-  /* Soft lavender-tinted border */
-  --input: #f5f5f9;
-  /* Light lavender-gray for borderless inputs */
-  --ring: #7C6FF7;
-  --chart-1: #7C6FF7;
-  --chart-2: #2C78FC;
-  --chart-3: #a8a3f8;
-  --chart-4: #c4c1fb;
-  --chart-5: #e0dffe;
-  --sidebar: #fafafa;
-  --sidebar-foreground: #181925;
-  --sidebar-primary: #7C6FF7;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0effe;
-  --sidebar-accent-foreground: #3d38a0;
-  --sidebar-border: #e8e8f0;
-  --sidebar-ring: #7C6FF7;
+  --radius: 0.375rem; /* 6px base, para bordes más serios corporativos */
+
+  /* ── Genesis Admin — Paleta Logo IYF ── */
+  --background: #F5F5F5;        /* Blanco Humo */
+  --foreground: #1E1E24;        /* Texto casi negro */
+  --card: #FFFFFF;              /* Blanco puro flotante */
+  --card-foreground: #1E1E24;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E1E24;
+  --primary: #004E9A;           /* Azul Logo */
+  --primary-foreground: #FFFFFF;
+  
+  --secondary: #15A444;         /* Verde Logo */
+  --secondary-foreground: #FFFFFF;
+  
+  --muted: #E8EAED;
+  --muted-foreground: #8A8A8E;
+  
+  --accent: #E2E8F0;
+  --accent-foreground: #004E9A; /* Azul Logo */
+  
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  
+  --border: #E2E8F0;
+  --input: #FFFFFF;
+  
+  --ring: #004E9A;              /* Azul Logo */
+  --chart-1: #004E9A;
+  --chart-2: #15A444;
+  --chart-3: #94A3B8;
+  --chart-4: #F59E0B;
+  --chart-5: #10B981;
+
+  /* Sidebar Tokens */
+  --sidebar-background: #FFFFFF;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #004E9A;   /* Azul Logo */
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #004E9A;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #004E9A;
+
+  /* ── Typography tokens ── */
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
 }
 
+/* ══════════════════════════════════════════════════════════
+   FORMULARIO CONVERSACIONAL — World Camp 2027 Perú
+   Paleta: Carmesí Bandera · Oro Andino · Verde Palta
+   Vibra: Póster cultural, texturas orgánicas, festival vivo
+   ══════════════════════════════════════════════════════════ */
+
+.formulario-conversacional {
+  /* Tokens de color vibrante inspirados en el póster peruano */
+  --background:        #FAF6EE;  /* Papel crema cálido */
+  --foreground:        #1C1007;  /* Carbón café andino */
+  --card:              #FFFFF8;  /* Papel ligeramente amarillo */
+  --card-foreground:   #1C1007;
+  --popover:           #FFFFF8;
+  --popover-foreground:#1C1007;
+
+  --primary:           #BE0A2F;  /* Rojo Carmesí — Bandera del Perú */
+  --primary-foreground:#FFFFF8;
+
+  --secondary:         #E8A000;  /* Oro Inca / Frutos amarillos */
+  --secondary-foreground: #1C1007;
+
+  --muted:             #EDE7D6;  /* Arena andina suave */
+  --muted-foreground:  #6B5B45;  /* Marrón tierra */
+
+  --accent:            #3A7D0A;  /* Verde Palta / Amazonía */
+  --accent-foreground: #FFFFF8;
+
+  --destructive:       #E53E3E;
+  --border:            #C4B49A;  /* Borde arena oscura */
+  --input:             #FFFFF8;
+  --ring:              #BE0A2F;
+
+  /* Colores semánticos extra del festival */
+  --oro:               #E8A000;
+  --verde:             #3A7D0A;
+  --carmesi:           #BE0A2F;
+  --crema:             #FAF6EE;
+  --tierra:            #8B5E3C;
+}
+
+/* ─── Textura de grano de papel / Ruido orgánico ─── */
+.formulario-conversacional::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  mix-blend-mode: multiply;
+}
+
+/* ─── Textura de grano con bg-grain utility ─── */
+.bg-grain {
+  position: relative;
+}
+.bg-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+.bg-grain > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Patrón zigzag decorativo andino ─── */
+.patron-andino {
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(190, 10, 47, 0.08) 4px,
+      rgba(190, 10, 47, 0.08) 5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 4px,
+      rgba(190, 10, 47, 0.05) 4px,
+      rgba(190, 10, 47, 0.05) 5px
+    );
+}
+
+/* ─── Inputs conversacionales — estilo línea gruesa ─── */
+.conversational-input {
+  background: transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 3px solid var(--border) !important;
+  border-radius: 0px !important;
+  padding: 0.6rem 0px !important;
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  color: var(--foreground) !important;
+  width: 100%;
+  transition: border-bottom-color 0.2s ease-in-out !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-family: var(--font-display);
+}
+.conversational-input:focus {
+  border-bottom-color: var(--carmesi, #BE0A2F) !important;
+}
+.conversational-input::placeholder {
+  color: #9A8570 !important;
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* ─── Tarjeta Opción (Género / Talla / Transporte) ─── */
+/* Estado normal */
+.tarjeta-opcion {
+  position: relative;
+  padding: 0.875rem 1.25rem;
+  border-radius: 14px;
+  border: 2.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+  box-shadow: 3px 3px 0px 0px rgba(196, 180, 154, 0.5);
+}
+
+/* Hover */
+.tarjeta-opcion:hover {
+  border-color: var(--tierra, #8B5E3C);
+  color: var(--foreground);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px rgba(139, 94, 60, 0.35);
+}
+
+/* Activo (pressed) */
+.tarjeta-opcion:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px rgba(139, 94, 60, 0.35);
+}
+
+/* Seleccionado */
+.tarjeta-opcion--seleccionada {
+  border-color: var(--carmesi, #BE0A2F);
+  background: #FFF0F3;
+  color: var(--carmesi, #BE0A2F);
+  box-shadow: 4px 4px 0px 0px rgba(190, 10, 47, 0.3);
+  transform: translate(-1px, -1px);
+}
+
+/* Variante verde (transporte, confirmaciones) */
+.tarjeta-opcion--verde {
+  border-color: var(--verde, #3A7D0A);
+  background: #F0FBE8;
+  color: var(--verde, #3A7D0A);
+  box-shadow: 4px 4px 0px 0px rgba(58, 125, 10, 0.3);
+  transform: translate(-1px, -1px);
+}
+
+/* ─── Botón Principal (Siguiente / Enviar) ─── */
+.btn-festival-primario {
+  background: var(--carmesi, #BE0A2F);
+  color: white;
+  border: 2.5px solid var(--foreground, #1C1007);
+  border-radius: 14px;
+  padding: 0.75rem 2rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px 0px rgba(28, 16, 7, 0.8);
+  transition: all 0.1s ease-out;
+  font-family: var(--font-display);
+}
+.btn-festival-primario:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px rgba(28, 16, 7, 0.8);
+}
+.btn-festival-primario:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px rgba(28, 16, 7, 0.8);
+}
+.btn-festival-primario:disabled {
+  background: #C4B49A;
+  border-color: #C4B49A;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* ─── Botón Fantasma (Anterior) ─── */
+.btn-festival-fantasma {
+  background: transparent;
+  color: var(--muted-foreground);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+  font-family: var(--font-display);
+}
+.btn-festival-fantasma:hover {
+  color: var(--foreground);
+  border-color: var(--border);
+  background: rgba(196, 180, 154, 0.2);
+}
+.btn-festival-fantasma:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Chevrons de Typeform (Arriba/Abajo) ─── */
+.chevron-festival {
+  display: flex;
+  border: 2.5px solid var(--foreground, #1C1007);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 3px 3px 0px 0px rgba(28, 16, 7, 0.7);
+  background: white;
+}
+.chevron-festival button {
+  padding: 0.6rem 0.75rem;
+  background: white;
+  border: none;
+  cursor: pointer;
+  color: var(--foreground);
+  transition: background 0.1s;
+  line-height: 1;
+}
+.chevron-festival button:first-child {
+  border-right: 2px solid var(--foreground, #1C1007);
+}
+.chevron-festival button:hover {
+  background: #FFF0F3;
+  color: var(--carmesi, #BE0A2F);
+}
+.chevron-festival button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  background: white;
+}
+
+/* ─── Badge del paso (01 / 12) ─── */
+.badge-paso {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--foreground);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  border-radius: 999px;
+  padding: 3px 12px;
+}
+
+/* ─── Banda de color decorativa superior (zigzag andino) ─── */
+.banda-andina {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    #BE0A2F 0px,
+    #BE0A2F 20px,
+    #E8A000 20px,
+    #E8A000 40px,
+    #3A7D0A 40px,
+    #3A7D0A 60px,
+    #1C1007 60px,
+    #1C1007 80px
+  );
+}
+
+/* ─── Sección del resumen — Estilo ticket de viaje ─── */
+.ticket-seccion {
+  border: 2.5px solid var(--foreground);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 4px 4px 0px 0px rgba(28, 16, 7, 0.6);
+  margin-bottom: 1.25rem;
+  background: var(--card);
+}
+.ticket-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 2.5px solid var(--foreground);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.ticket-cabecera--carmesi {
+  background: #BE0A2F;
+  color: white;
+}
+.ticket-cabecera--oro {
+  background: #E8A000;
+  color: #1C1007;
+}
+.ticket-cabecera--verde {
+  background: #3A7D0A;
+  color: white;
+}
+.ticket-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1.5px dashed var(--border);
+}
+.ticket-fila:last-child {
+  border-bottom: none;
+}
+.ticket-fila:hover {
+  background: rgba(232, 160, 0, 0.05);
+}
+.ticket-etiqueta {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ticket-valor {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--foreground);
+  text-align: right;
+  max-width: 58%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Select trigger (Shadcn override para formulario) ─── */
+.formulario-conversacional [data-slot="select-trigger"] {
+  border: 2.5px solid var(--border) !important;
+  border-radius: 12px !important;
+  background: var(--card) !important;
+  box-shadow: 3px 3px 0px 0px rgba(196, 180, 154, 0.5) !important;
+  transition: all 0.15s ease-out !important;
+  height: auto !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+.formulario-conversacional [data-slot="select-trigger"]:hover {
+  border-color: var(--tierra, #8B5E3C) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 4px 4px 0px 0px rgba(139, 94, 60, 0.35) !important;
+}
+.formulario-conversacional [data-slot="select-trigger"]:focus,
+.formulario-conversacional [data-slot="select-trigger"][data-state="open"] {
+  border-color: var(--carmesi, #BE0A2F) !important;
+  box-shadow: 4px 4px 0px 0px rgba(190, 10, 47, 0.25) !important;
+  outline: none !important;
+  transform: translate(-1px, -1px) !important;
+}
+
+/* ─── Placeholders más opacos en todo el formulario ─── */
+.formulario-conversacional input::placeholder,
+.formulario-conversacional textarea::placeholder,
+.formulario-conversacional .PhoneInputInput::placeholder {
+  color: #9A8570 !important;
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* ─── Scrollbar sutil personalizada ─── */
+.thin-scrollbar::-webkit-scrollbar { width: 5px; }
+.thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(190, 10, 47, 0.25);
+  border-radius: 4px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(190, 10, 47, 0.5);
+}
+
+/* ─── react-phone-number-input custom styles ─── */
+.phone-input-custom {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.phone-input-custom .PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.65rem 0.75rem;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  height: 52px;
+  box-shadow: 3px 3px 0px 0px rgba(196, 180, 154, 0.5);
+  transition: all 0.15s ease-out;
+}
+
+.phone-input-custom .PhoneInputCountry:focus-within {
+  border-color: var(--carmesi, #BE0A2F);
+  box-shadow: 4px 4px 0px 0px rgba(190, 10, 47, 0.25);
+}
+
+.phone-input-custom .PhoneInputCountryIcon {
+  width: 1.25rem;
+  height: 0.875rem;
+}
+
+.phone-input-custom .PhoneInputCountrySelectArrow {
+  opacity: 0.5;
+  margin-left: 0.25rem;
+}
+
+.phone-input-custom .PhoneInputInput {
+  flex: 1;
+  height: 52px;
+  width: 100%;
+  border-radius: 12px;
+  border: 2.5px solid var(--border);
+  background: var(--card);
+  padding: 0 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  color: var(--foreground);
+  outline: none;
+  box-shadow: 3px 3px 0px 0px rgba(196, 180, 154, 0.5);
+  transition: all 0.15s ease-out;
+}
+
+.phone-input-custom .PhoneInputInput:focus {
+  border-color: var(--carmesi, #BE0A2F);
+  box-shadow: 4px 4px 0px 0px rgba(190, 10, 47, 0.25);
+}
+
+
 .dark {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --card: #1e293b;
-  --card-foreground: #f8fafc;
-  --popover: #1e293b;
-  --popover-foreground: #f8fafc;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: #1e293b;
-  --accent-foreground: #f8fafc;
-  --destructive: #ef4444;
-  --border: #334155;
-  --input: #334155;
-  --ring: #3b82f6;
-  --chart-1: #3b82f6;
-  --chart-2: #60a5fa;
-  --chart-3: #93c5fd;
-  --chart-4: #bfdbfe;
-  --chart-5: #dbeafe;
-  --sidebar: #1e293b;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #3b82f6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #334155;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #334155;
-  --sidebar-ring: #3b82f6;
+  --background: #0A0F1E;
+  --foreground: #E2E8F0;
+  --card: #111827;
+  --card-foreground: #E2E8F0;
+  --popover: #111827;
+  --popover-foreground: #E2E8F0;
+  --primary: #004E9A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #15A444;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1E293B;
+  --muted-foreground: #64748B;
+  --accent: #1E3A4F;
+  --accent-foreground: #7DD3FC;
+  --destructive: #EF4444;
+  --border: rgba(255,255,255,0.08);
+  --input: #1E293B;
+  --ring: #004E9A;
+  --chart-1: #004E9A;
+  --chart-2: #15A444;
+  --chart-3: #38BDF8;
+  --chart-4: #7DD3FC;
+  --chart-5: #BAE6FD;
+  --sidebar: #060C18;
+  --sidebar-foreground: #94A3B8;
+  --sidebar-primary: #004E9A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(0, 78, 154, 0.20);
+  --sidebar-accent-foreground: #7DD3FC;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-ring: #004E9A;
 }
 
 @layer base {
@@ -129,21 +585,104 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.015em;
+    font-family: var(--font-display);
+    letter-spacing: -0.012em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Datos numéricos en mono */
+  .font-mono,
+  [data-mono] {
+    font-family: var(--font-mono);
   }
 }
 
 @layer utilities {
-  .shadow-soft {
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 0 3px rgba(0, 0, 0, 0.02);
-    /* Limitless style soft shadow */
+  /* Shadows — Neumorfismo Suave */
+  .shadow-modern {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
   }
 
+  .shadow-modern-hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  .shadow-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  }
+
+  .shadow-card-hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  .shadow-modal {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  }
+
+  /* Input field unificado */
   .input-field {
-    @apply w-full px-3 py-2 text-sm rounded-xl border border-border bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring/40 transition text-foreground;
+    @apply w-full px-4 py-3 text-sm rounded-xl border border-border bg-card
+           focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50
+           transition-all duration-150 text-foreground placeholder:text-muted-foreground/60;
+  }
+
+  /* Sidebar nav item states */
+  .nav-item {
+    @apply flex items-center justify-center w-10 h-10 rounded-full text-sidebar-foreground
+           transition-all duration-150 relative
+           hover:bg-sidebar-accent hover:text-sidebar-primary;
+  }
+
+  .nav-item-active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground;
+  }
+  
+  /* Pill nav item states for top header */
+  .pill-nav-item {
+    @apply flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
+           transition-all duration-150 relative text-muted-foreground
+           hover:bg-muted hover:text-foreground;
+  }
+
+  .pill-nav-item-active {
+    @apply bg-foreground text-background hover:bg-foreground hover:text-background;
+  }
+
+  /* Data numbers — mono rendering */
+  .stat-number {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* Subtle entry animation */
+  .animate-fade-up {
+    animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Page section stagger */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.10s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.20s; }
+
+  /* Scrollbar minimal */
+  .hide-scrollbar::-webkit-scrollbar { width: 0px; }
+  .thin-scrollbar::-webkit-scrollbar { width: 4px; }
+  .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 2px;
   }
 }
 
@@ -159,11 +698,16 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem 0.75rem;
-  border: none;
-  border-radius: 12px;
-  background: rgb(241 245 249 / 0.7);
-  /* slate-100/70 */
-  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input);
+  height: 42px;
+  transition: border-color 0.15s;
+}
+
+.phone-input-custom .PhoneInputCountry:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 157, 225, 0.15);
 }
 
 .phone-input-custom .PhoneInputCountryIcon {
@@ -172,28 +716,203 @@
 }
 
 .phone-input-custom .PhoneInputCountrySelectArrow {
-  opacity: 0.5;
+  opacity: 0.4;
   margin-left: 0.25rem;
 }
 
 .phone-input-custom .PhoneInputInput {
   flex: 1;
-  height: 40px;
+  height: 42px;
   width: 100%;
-  border-radius: 12px;
-  border: none;
-  background: rgb(241 245 249 / 0.7);
-  /* slate-100/70 */
-  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--input);
+  padding: 0 14px;
   font-size: 0.875rem;
+  font-family: var(--font-display);
   color: var(--foreground);
   outline: none;
   box-shadow: none;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .phone-input-custom .PhoneInputInput:focus {
-  background: rgb(241 245 249);
-  /* slate-100 */
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 157, 225, 0.15);
+}
+
+/* Estilos adicionales para la interfaz conversacional */
+.conversational-input {
+  background: transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 2px solid var(--border) !important;
+  border-radius: 0px !important;
+  padding: 0.75rem 0px !important;
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+  color: var(--foreground) !important;
+  width: 100%;
+  transition: border-bottom-color 0.2s ease-in-out !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.conversational-input:focus {
+  border-bottom-color: var(--primary) !important;
+}
+
+/* Hacer los placeholders más opacos y legibles */
+.formulario-conversacional input::placeholder,
+.formulario-conversacional textarea::placeholder,
+.formulario-conversacional .PhoneInputInput::placeholder {
+  color: #6B7280 !important;
+  opacity: 0.85 !important;
+}
+
+/* ─── Responsive overrides for mobile screens (max-width: 767px) ─── */
+@media (max-width: 767px) {
+  .conversational-input {
+    font-size: 1.15rem !important;
+    padding: 0.45rem 0px !important;
+    border-bottom-width: 2px !important;
+  }
+  
+  .btn-festival-primario {
+    padding: 0.6rem 1.25rem !important;
+    font-size: 0.875rem !important;
+    border-width: 2px !important;
+    border-radius: 10px !important;
+    box-shadow: 2.5px 2.5px 0px 0px rgba(28, 16, 7, 0.8) !important;
+  }
+  
+  .btn-festival-fantasma {
+    padding: 0.6rem 0.75rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 10px !important;
+  }
+  
+  .chevron-festival {
+    border-width: 2px !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 2px 0px 0px rgba(28, 16, 7, 0.7) !important;
+  }
+  
+  .chevron-festival button {
+    padding: 0.45rem 0.55rem !important;
+  }
+  
+  .tarjeta-opcion {
+    padding: 0.65rem 0.9rem !important;
+    font-size: 0.85rem !important;
+    border-width: 2px !important;
+    border-radius: 10px !important;
+    box-shadow: 2.5px 2.5px 0px 0px rgba(196, 180, 154, 0.5) !important;
+  }
+  
+  .tarjeta-opcion:hover {
+    box-shadow: 3px 3px 0px 0px rgba(139, 94, 60, 0.35) !important;
+    transform: translate(-0.5px, -0.5px) !important;
+  }
+  
+  .tarjeta-opcion:active {
+    transform: translate(1.5px, 1.5px) !important;
+    box-shadow: 1px 1px 0px 0px rgba(139, 94, 60, 0.35) !important;
+  }
+  
+  .tarjeta-opcion--seleccionada {
+    box-shadow: 3px 3px 0px 0px rgba(190, 10, 47, 0.3) !important;
+    transform: translate(-0.5px, -0.5px) !important;
+  }
+  
+  .tarjeta-opcion--verde {
+    box-shadow: 3px 3px 0px 0px rgba(58, 125, 10, 0.3) !important;
+    transform: translate(-0.5px, -0.5px) !important;
+  }
+
+  .badge-paso {
+    font-size: 0.65rem !important;
+    padding: 2px 10px !important;
+  }
+
+  /* Compact reactive phone input and selects */
+  .phone-input-custom .PhoneInputCountry {
+    height: 38px !important;
+    padding: 0.4rem 0.6rem !important;
+    border-radius: 8px !important;
+  }
+  
+  .phone-input-custom .PhoneInputInput {
+    height: 38px !important;
+    padding: 0 10px !important;
+    font-size: 0.875rem !important;
+    border-radius: 8px !important;
+  }
+
+    .formulario-conversacional [role="combobox"],
+  .formulario-conversacional button[id^="radix-"] {
+    height: 38px !important;
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* ─── Compactado para pantallas cortas (laptops, monitores 768-900px alto) ─── */
+@media (max-height: 750px) and (min-width: 768px) {
+  /* Inputs conversacionales más pequeños */
+  .conversational-input {
+    font-size: 1.1rem !important;
+    padding: 0.4rem 0px !important;
+    border-bottom-width: 2px !important;
+  }
+
+  /* Selects más compactos */
+  .formulario-conversacional [data-slot="select-trigger"] {
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.9rem !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 2px 0px 0px rgba(196, 180, 154, 0.5) !important;
+  }
+
+  /* Tarjetas de opción más compactas */
+  .tarjeta-opcion {
+    padding: 0.55rem 1rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 10px !important;
+  }
+
+  /* Phone input */
+  .phone-input-custom .PhoneInputCountry {
+    height: 40px !important;
+    padding: 0.4rem 0.65rem !important;
+  }
+  .phone-input-custom .PhoneInputInput {
+    height: 40px !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Botones más compactos */
+  .btn-festival-primario {
+    padding: 0.55rem 1.5rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 10px !important;
+    box-shadow: 3px 3px 0px 0px rgba(28, 16, 7, 0.8) !important;
+  }
+  .btn-festival-fantasma {
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.875rem !important;
+  }
+  .chevron-festival button {
+    padding: 0.45rem 0.65rem !important;
+  }
+
+  /* Badge paso */
+  .badge-paso {
+    font-size: 0.65rem !important;
+    padding: 2px 10px !important;
+  }
 }
